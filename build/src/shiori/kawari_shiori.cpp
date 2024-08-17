@@ -73,6 +73,7 @@
 //#include <iostream>
 #include <fstream>
 #include <cstdlib>
+#include <cstring>
 #include <ctime>
 #include <cctype>
 using namespace std;
