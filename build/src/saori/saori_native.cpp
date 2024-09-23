@@ -201,9 +201,15 @@ TModuleFactoryNative::~TModuleFactoryNative(){
 //---------------------------------------------------------------------------
 // ½é´ü²½
 bool TModuleNative::Initialize(void){
+#if defined(WIN32)||defined(_WIN32)||defined(_Windows)||defined(__CYGWIN__)
 	func_load=(BOOL (SHIORI_CALL *)(MEMORY_HANDLE, long))get_symbol(handle, "load");
 	func_unload=(BOOL (SHIORI_CALL *)(void))get_symbol(handle, "unload");
 	func_request=(MEMORY_HANDLE (SHIORI_CALL *)(MEMORY_HANDLE, long *))get_symbol(handle, "request");
+#else
+	func_load=(long (SHIORI_CALL *)(MEMORY_HANDLE, long))get_symbol(handle, "load");
+	func_unload=(int (SHIORI_CALL *)(long))get_symbol(handle, "unload");
+	func_request=(MEMORY_HANDLE (SHIORI_CALL *)(long id, MEMORY_HANDLE, long *))get_symbol(handle, "request");
+#endif // Windows
 
 	if (func_request==NULL){
 		GetFactory().GetLogger().GetStream(LOG_ERROR) << "[SAORI Native] importing 'request' from ("+path+") failed." << endl;
@@ -229,7 +235,12 @@ bool TModuleNative::Load(void){
 	if (!h) return false;
 	basepath.copy((char *)h, len);
 	GetFactory().GetLogger().GetStream(LOG_INFO) << "[SAORI Native] load(" << basepath << ")." << endl;
+#if defined(WIN32)||defined(_WIN32)||defined(_Windows)||defined(__CYGWIN__)
 	return (0!=(func_load)(h,len));
+#else
+    id = (func_load)(h, len);
+    return id;
+#endif // Windows
 }
 //---------------------------------------------------------------------------
 // SAORI/1.0 Unload
@@ -237,7 +248,11 @@ bool TModuleNative::Unload(void){
 	if (!func_unload) return true;
 
 	GetFactory().GetLogger().GetStream(LOG_INFO) << "[SAORI Native] unload()" << endl;
+#if defined(WIN32)||defined(_WIN32)||defined(_Windows)||defined(__CYGWIN__)
 	(func_unload)();
+#else
+    (func_unload)(id);
+#endif // Windows
 	return true;
 }
 //---------------------------------------------------------------------------
@@ -250,7 +265,11 @@ string TModuleNative::Request(const string &req){
 	if (!h) return ("");
 	req.copy((char *)h, len);
 
+#if defined(WIN32)||defined(_WIN32)||defined(_Windows)||defined(__CYGWIN__)
 	h=func_request(h, &len);
+#else
+	h=func_request(id, h, &len);
+#endif // Windows
 
 	if (h) {
 		string res((const char *)h, len);

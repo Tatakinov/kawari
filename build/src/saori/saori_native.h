@@ -51,11 +51,22 @@ protected:
 	TModuleNative(TModuleFactoryNative &fac, const std::string &p, SAORI_HANDLE handle)
 		 : TModule(fac, p, handle) {}
 
+#if defined(WIN32)||defined(_WIN32)||defined(_Windows)||defined(__CYGWIN__)
 	BOOL	(SHIORI_CALL *func_load)(MEMORY_HANDLE, long);
 	BOOL	(SHIORI_CALL *func_unload)(void);
 	MEMORY_HANDLE	(SHIORI_CALL *func_request)(MEMORY_HANDLE, long *);
+#else
+	long	(SHIORI_CALL *func_load)(MEMORY_HANDLE, long);
+	int	(SHIORI_CALL *func_unload)(long);
+	MEMORY_HANDLE	(SHIORI_CALL *func_request)(long, MEMORY_HANDLE, long *);
+#endif // Windows
 
 	friend class TModuleFactoryNative;
+#if defined(WIN32)||defined(_WIN32)||defined(_Windows)||defined(__CYGWIN__)
+#else
+private:
+    long id;
+#endif // Windows
 };
 //---------------------------------------------------------------------------
 } // namespace saori
