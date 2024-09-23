@@ -8,14 +8,14 @@ include files.mak
 #==========================================================================
 
 ## choose your target: cygwin, mingw, linux, freebsd, darwin
-MACH_TYPE = mingw
+MACH_TYPE = linux
 
 ## output name
 SHIORI = shiori
 
 ## if you have 'upx' and want to use it
 # UPX = upx
-UPX = upx
+UPX =
 
 ## if you want to use STLport, set STLport=yes
 # STLport = yes
