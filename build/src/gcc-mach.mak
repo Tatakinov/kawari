@@ -36,7 +36,7 @@ LIBEXT_darwin = .l
 CFLAGS_cygwin =  -DUSEKDB
 CFLAGS_mingw =   -DUSEKDB -static
 CFLAGS_js =      -UWIN32 -U_WIN32 -U_Windows -U__CYGWIN__ -s ALLOW_MEMORY_GROWTH=1
-CFLAGS_linux =
+CFLAGS_linux = -fPIC
 CFLAGS_freebsd =
 CFLAGS_darwin =  
 
