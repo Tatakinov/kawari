@@ -206,9 +206,12 @@ bool TModuleNative::Initialize(void){
 	func_unload=(BOOL (SHIORI_CALL *)(void))get_symbol(handle, "unload");
 	func_request=(MEMORY_HANDLE (SHIORI_CALL *)(MEMORY_HANDLE, long *))get_symbol(handle, "request");
 #else
-	func_load=(long (SHIORI_CALL *)(MEMORY_HANDLE, long))get_symbol(handle, "multi_load");
-	func_unload=(int (SHIORI_CALL *)(long))get_symbol(handle, "multi_unload");
-	func_request=(MEMORY_HANDLE (SHIORI_CALL *)(long id, MEMORY_HANDLE, long *))get_symbol(handle, "multi_request");
+    std::string name_load = filename + "_multi_load";
+	func_load=(long (SHIORI_CALL *)(MEMORY_HANDLE, long))get_symbol(handle, name_load.c_str());
+    std::string name_unload = filename + "_multi_unload";
+	func_unload=(int (SHIORI_CALL *)(long))get_symbol(handle, name_unload.c_str());
+    std::string name_request = filename + "_multi_request";
+	func_request=(MEMORY_HANDLE (SHIORI_CALL *)(long id, MEMORY_HANDLE, long *))get_symbol(handle, name_request.c_str());
 #endif // Windows
 
 	if (func_request==NULL){

@@ -17,6 +17,11 @@
 //---------------------------------------------------------------------------
 #include <string>
 #include <map>
+#if defined(WIN32)||defined(_WIN32)||defined(_Windows)||defined(__CYGWIN__)
+#else
+#include <cstring>
+#include <libgen.h>
+#endif // Windows
 //---------------------------------------------------------------------------
 namespace saori{
 //---------------------------------------------------------------------------
@@ -49,7 +54,18 @@ public:
 
 protected:
 	TModuleNative(TModuleFactoryNative &fac, const std::string &p, SAORI_HANDLE handle)
-		 : TModule(fac, p, handle) {}
+		 : TModule(fac, p, handle) {
+#if defined(WIN32)||defined(_WIN32)||defined(_Windows)||defined(__CYGWIN__)
+#else
+         char *path = strdup(p.c_str());
+         filename = basename(path);
+         free(path);
+         auto pos = filename.rfind(".dll");
+         if (pos != decltype(filename)::npos) {
+             filename = filename.substr(0, pos);
+         }
+#endif // Windows
+     }
 
 #if defined(WIN32)||defined(_WIN32)||defined(_Windows)||defined(__CYGWIN__)
 	BOOL	(SHIORI_CALL *func_load)(MEMORY_HANDLE, long);
@@ -66,6 +82,7 @@ protected:
 #else
 private:
     long id;
+    std::string filename;
 #endif // Windows
 };
 //---------------------------------------------------------------------------
